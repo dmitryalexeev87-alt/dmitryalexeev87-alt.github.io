@@ -149,6 +149,10 @@ section:last-of-type { border-bottom: 0; }
   .stat:nth-child(even) { border-left: 1px solid var(--line); }
   .stat:last-child { grid-column: 1 / -1; border-left: 0; }
 }
+@media (max-width: 520px) {
+  .stat { padding: 18px 14px; }
+  .stat b { font-size: 21px; white-space: normal; }
+}
 
 /* About + path */
 .about { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 56px; }
