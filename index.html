@@ -237,6 +237,23 @@ details ul { margin: 14px 0 0; padding-left: 20px; display: grid; gap: 8px; max-
 .contact .lede { color: color-mix(in srgb, var(--paper) 72%, var(--ink)); margin-top: 16px; }
 .open { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; border: 1px solid color-mix(in srgb, var(--paper) 30%, var(--ink)); border-radius: 999px; padding: 6px 12px; }
 .open i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+/* Spot the bluff */
+.bluff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.bluff-card { text-align: left; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 6px 16px; align-items: start; cursor: pointer; transition: border-color .15s, transform .15s, background .15s; }
+.bluff-card:hover { border-color: var(--ink); transform: translateY(-2px); }
+.bluff-letter { grid-row: 1 / span 2; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 20px; }
+.bluff-text { font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1.3; min-width: 0; }
+.bluff-pick { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.bluff-pick::after { content: "Is this the bluff?"; }
+.bluff-card[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.bluff-card[aria-pressed="true"] .bluff-letter { background: var(--accent); color: var(--accent-ink); }
+.bluff-card[aria-pressed="true"] .bluff-pick { color: var(--accent); }
+.bluff-card[aria-pressed="true"] .bluff-pick::after { content: "Your guess"; }
+.bluff-cta { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+#bluff-status { color: var(--muted); }
+@media (max-width: 700px) { .bluff-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .bluff-card { transition: none; } .bluff-card:hover { transform: none; } }
+
 .ways { margin-top: 28px; display: grid; gap: 10px; }
 .ways-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .ways-row span { border: 1px solid color-mix(in srgb, var(--paper) 35%, var(--ink)); border-radius: 8px; padding: 7px 14px; font-weight: 600; font-size: 15px; }
@@ -546,6 +563,26 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   </div>
 </section>
 
+<section id="off-agenda">
+  <div class="wrap">
+    <div class="head">
+      <p class="label">Off the agenda</p>
+      <h2>Spot the bluff</h2>
+      <p class="lede">Three of these really happened. One didn't. Pick the one you think I made up, then ask me. I only reveal the answer in conversation.</p>
+    </div>
+    <div class="bluff-grid" role="group" aria-label="Pick the statement you think is made up">
+      <button type="button" class="bluff-card" aria-pressed="false" data-letter="A"><span class="bluff-letter">A</span><span class="bluff-text">I played for a club that competed in the UEFA Champions League.</span><span class="bluff-pick"></span></button>
+      <button type="button" class="bluff-card" aria-pressed="false" data-letter="B"><span class="bluff-letter">B</span><span class="bluff-text">I co-starred in an award-winning short movie.</span><span class="bluff-pick"></span></button>
+      <button type="button" class="bluff-card" aria-pressed="false" data-letter="C"><span class="bluff-letter">C</span><span class="bluff-text">I took part in a European cliff-diving championship.</span><span class="bluff-pick"></span></button>
+      <button type="button" class="bluff-card" aria-pressed="false" data-letter="D"><span class="bluff-letter">D</span><span class="bluff-text">I once attended a dinner with Roger Federer, Lewis Hamilton, Michael Phelps and Kaká.</span><span class="bluff-pick"></span></button>
+    </div>
+    <div class="bluff-cta">
+      <p id="bluff-status" aria-live="polite">No guess yet. Tap the one you think is made up.</p>
+      <a class="btn primary" href="https://www.linkedin.com/in/dmitry-alexeev-a032158" target="_blank" rel="noopener">Ask me which one →</a>
+    </div>
+  </div>
+</section>
+
 <section class="contact" id="contact">
   <div class="wrap">
     <span class="open"><i></i>Open to roles and projects</span>
@@ -584,6 +621,23 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     try {
       navigator.clipboard.writeText(email.textContent).then(done, fallback);
     } catch (e) { fallback(); }
+  });
+})();
+(function () {
+  var cards = document.querySelectorAll('.bluff-card');
+  var status = document.getElementById('bluff-status');
+  var idle = 'No guess yet. Tap the one you think is made up.';
+  cards.forEach(function (card) {
+    card.addEventListener('click', function () {
+      var picking = card.getAttribute('aria-pressed') !== 'true';
+      cards.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+      if (picking) {
+        card.setAttribute('aria-pressed', 'true');
+        status.textContent = 'Your guess: ' + card.dataset.letter + '. Ask me if you got it right.';
+      } else {
+        status.textContent = idle;
+      }
+    });
   });
 })();
 </script>
